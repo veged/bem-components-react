@@ -1,16 +1,18 @@
-modules.require(
-    ['i-bem__dom', 'jquery', 'objects', 'functions', 'BEMHTML'],
-    function(BemDom, $, objects, functions, BEMHTML) {
+(function(global) {
 
-var bemReactComponents = {};
+var React = global.React,
+    BEMHTML = global.BEMHTML,
+    modules = global.modules,
 
-function createBemComponent(block, spec) {
+    bemReactComponents = {};
+
+function createComponent(block, spec) {
     return bemReactComponents[block] = React.createClass(objects.extend({
         mixins : [BemComponentMixin]
     }, spec));
 }
 
-function createBemElement(bemjson) {
+function createElement(bemjson) {
     return React.createElement(
         bemReactComponents[bemjson.block],
         bemjson);
@@ -33,7 +35,7 @@ function toBemCssClasses(json, base, parentBase) {
         }
     }
     return res;
-};
+}
 
 function toReact(json) {
     var i;
@@ -129,91 +131,71 @@ function propsToBemjson(props) {
     return res;
 }
 
-var myClass = React.createClass({
-        getInitialState : function() {
-            return { text : ' !!! ' };
-        },
-
-        componentDidMount : function() {
-            var _this = this;
-            setTimeout(function() {
-                _this.setState({ text : ' ??? ' });
-                setTimeout(function() {
-                    _this.setState({ text : ' !!! ', disabled : true });
-                }, 50)
-            }, 50)
-        },
-
-        render : function() {
-            return React.createElement('div', null, [
-                createBemElement(
-                    {
-                        block : 'button',
-                        key : 'b',
-                        mods : { theme : 'islands', size : 'm', disabled : this.state.disabled },
-                        text : this.state.text,
-                        on : {
-                            'click' : function() {
-                                console.log('click');
-                            }
-                        },
-                        onMod : {
-                            'disabled' : {
-                                'true' : function() {
-                                    console.log('disable');
-                                }
-                            }
-                        }
-                    }),
-                createBemElement(
-                    {
-                        block : 'select',
-                        key : 's',
-                        mods : { mode : 'radio-check', theme : 'islands', size : 'm' },
-                        val : 2,
-                        text : '—',
-                        options : [
-                            { val : 1, text : 'Доклад' },
-                            { val : 2, text : 'Мастер-класс' },
-                            { val : 3, text : 'Круглый стол' }
-                        ]
-                    })
-            ]);
-        }
-    }),
-
+var BemDom = null,
     BemComponentMixin = {
         componentDidMount : function() {
             var _this = this,
-                eventsMap = _this.eventsMap || {};
+                lastProps = this.props;
 
-            this.block = BemDom.init($(this.getDOMNode())).bem(this.props.block)
-                .on('*', function(e, data) {
-                    var fn;
+            modules.require(['i-bem__dom', 'jquery', this.props.block], function(BemDom_, $, blockCls) {
+                BemDom = BemDom_;
 
-                    if(data && data.modName) {
-                        var onMod = _this.props.onMod;
-                        if(onMod) {
-                            var propsFn = onMod[data.modName] && onMod[data.modName][data.modVal]
-                            e.type === '_' + data.modName + '_' + data.modVal && (fn = propsFn);
-                        }
-                    } else {
-                        var on = _this.props.on;
-                        fn = on && on[e.type];
+                if(_this.isMounted()) {
+                    _this.block = BemDom_.init($(React.findDOMNode(_this))).bem(blockCls.getName())
+                        .on('*', function(e, data) {
+                            var fn;
+
+                            if(data && data.modName) {
+                                var onMod = _this.props.onMod;
+                                if(onMod) {
+                                    var propsFn = onMod[data.modName] && onMod[data.modName][data.modVal];
+                                    e.type === '_' + data.modName + '_' + data.modVal && (fn = propsFn);
+                                }
+                            } else {
+                                var on = _this.props.on;
+                                fn = on && on[e.type];
+                            }
+
+                            fn && fn.apply(this, arguments);
+                        });
+
+                    if(_this.props !== lastProps) {
+                        _this.updateBlock(lastProps, _this.props);
                     }
-
-                    fn && fn.apply(this, arguments);
-                });
+                }
+            });
         },
 
         componentWillUnmount : function() {
-            BemDom.destruct(this.block.domElem);
+            this.block && BemDom.destruct(this.block.domElem);
         },
 
         componentWillReceiveProps : function(nextProps) {
+            if(!this.block) {
+                return;
+            }
+            this.updateBlock(this.props, nextProps);
+        },
+
+        updateBlock : function(curProps, nextProps) {
+            this.updateBlockMods(curProps, nextProps);
+            this.updateBlockState && this.updateBlockState(curProps, nextProps);
+        },
+
+        updateBlockMods : function(curProps, nextProps) {
             var nextMods = nextProps.mods,
-                curMods = this.props.mods,
+                curMods = curProps.mods,
                 block = this.block;
+
+            if(nextMods) {
+                for(var modName in nextMods) {
+                    if(obj.hasOwnProperty(key)) {
+                        if(!curMods || curMods[modName] !== modVal) {
+                            block.setMod(modName, modVal);
+                        }
+                    }
+                }
+            }
 
             nextMods && objects.each(nextMods, function(modVal, modName) {
                 if(!curMods || curMods[modName] !== modVal) {
@@ -226,8 +208,6 @@ var myClass = React.createClass({
                     block.delMod(modName);
                 }
             });
-
-            this.updateBlockState && this.updateBlockState(this.props, nextProps);
         },
 
         shouldComponentUpdate : function() {
@@ -238,20 +218,31 @@ var myClass = React.createClass({
             return bemjsonToReact(propsToBemjson(this.props));
         }
     },
+    reactBem = {
+        createElement : createElement,
+        createComponent : createComponent
+    };
 
-    Button = createBemComponent('button', {
-        updateBlockState : function(prevProps, nextProps) {
-            nextProps.text === prevProps.text || (this.block.setText(nextProps.text));
-        }
-    }),
+var defineAsGlobal = true;
+if(typeof module === 'object' && typeof module.exports === 'object') {
+    module.exports = reactBem;
+    defineAsGlobal = false;
+}
 
-    Select = createBemComponent('select', {
+if(typeof modules === 'object' && typeof modules.define === 'function') {
+    modules.define('react-bem', function(provide) {
+        provide(reactBem);
     });
+    defineAsGlobal = false;
+}
 
-setTimeout(function() { React.render(React.createElement(myClass), document.getElementsByClassName('my-app')[0]) }, 50);
+if(typeof define === 'function') {
+    define(function(require, exports, module) {
+        module.exports = reactBem;
+    });
+    defineAsGlobal = false;
+}
 
-window.ondblclick = function() {
-    React.render(React.createElement('div'), document.getElementsByClassName('my-app')[0]);
-};
+defineAsGlobal && (global.reactBem = reactBem);
 
-});
+})(this);

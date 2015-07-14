@@ -1,0 +1,62 @@
+{
+  "author": "",
+  "license": "MPL-2.0",
+  "name": "bem-components",
+  "version": "2.2.1",
+  "description": "BEM Components Library",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/bem/bem-components.git"
+  },
+  "keywords": [
+    "bem"
+  ],
+  "engines": {
+    "node": ">=0.10"
+  },
+  "dependencies": {
+    "bem-environ": "~1.4.0"
+  },
+  "devDependencies": {
+    "bem": "~0.9.0",
+    "bem-naming": "0.5.1",
+    "enb": "0.15.0",
+    "enb-bem-techs": "^1.0.3",
+    "enb-bh": "0.5.0",
+    "enb-borschik": "^1.5.0",
+    "enb-diverse-js": "0.1.0",
+    "enb-magic-platform": "0.5.0",
+    "enb-modules": "0.2.0",
+    "git-hooks": "~0.0.6",
+    "istanbul": "0.3.5",
+    "jscs": "^1.11.2",
+    "jscs-bem": "^0.2.0",
+    "jshint": "2.6.0",
+    "jshint-groups": "0.7.0",
+    "react": "^0.13.3"
+  },
+  "optionalDependencies": {},
+  "private": true,
+  "scripts": {
+    "start": "magic server",
+    "deps": "bower i",
+    "dist": "npm run deps && magic make dist/desktop dist/touch-pad dist/touch-phone",
+    "compiled": "find . -iname '*.styl' | xargs stylus",
+    "build": "npm run build-${TEST_SCOPE:-all}",
+    "build-all": "npm run deps && magic make desktop.examples desktop.tests desktop.docs touch.examples touch.tests touch.docs *.pages/*",
+    "build-specs": "npm run deps",
+    "build-tmpls": "npm run deps",
+    "build-gemini": "npm run deps && magic make desktop.tests",
+    "test": "npm run build && npm run ${TEST_SCOPE:-test-all}",
+    "test-all": "npm run lint && npm run unit && npm run test-tmpls && npm run gemini",
+    "test-specs": "magic run specs",
+    "test-tmpls": "magic run tmpl-specs",
+    "lint": "jshint-groups && jscs . && csscomb -vl .",
+    "specs": "npm run lint && npm run test-specs",
+    "tmpls": "npm run test-tmpls",
+    "unit": "npm run test-specs",
+    "gemini": "http-server -s -p 8000 & p=$!; gemini test --reporter html --reporter flat; e=$?; kill -9 ${p}; exit ${e}",
+    "gemini-gather": "http-server -c \"no-cache, no-store\" -s -p 8000 & p=$!; gemini gather; kill -9 ${p}",
+    "coverage": "ISTANBUL_COVERAGE=yes npm run specs"
+  }
+}
