@@ -4,10 +4,23 @@ var React = global.React,
     BEMHTML = global.BEMHTML,
     modules = global.modules,
 
-    bemReactComponents = {};
+    bemReactComponents = {},
+    hasOwnProp = Object.prototype.hasOwnProperty;
+
+function extend(target, source) {
+    (typeof target !== 'object' || target === null) && (target = {});
+
+    if(source) {
+        for(var key in source) {
+            hasOwnProp.call(source, key) && (target[key] = source[key]);
+        }
+    }
+
+    return target;
+}
 
 function createComponent(block, spec) {
-    return bemReactComponents[block] = React.createClass(objects.extend({
+    return bemReactComponents[block] = React.createClass(extend({
         mixins : [BemComponentMixin]
     }, spec));
 }
@@ -185,11 +198,13 @@ var BemDom = null,
         updateBlockMods : function(curProps, nextProps) {
             var nextMods = nextProps.mods,
                 curMods = curProps.mods,
-                block = this.block;
+                block = this.block,
+                modName, modVal;
 
             if(nextMods) {
-                for(var modName in nextMods) {
-                    if(obj.hasOwnProperty(key)) {
+                for(modName in nextMods) {
+                    if(hasOwnProp.call(nextMods, modName)) {
+                        modVal = nextMods[modName];
                         if(!curMods || curMods[modName] !== modVal) {
                             block.setMod(modName, modVal);
                         }
@@ -197,17 +212,16 @@ var BemDom = null,
                 }
             }
 
-            nextMods && objects.each(nextMods, function(modVal, modName) {
-                if(!curMods || curMods[modName] !== modVal) {
-                    block.setMod(modName, modVal);
+            if(curMods) {
+                for(modName in curMods) {
+                    if(hasOwnProp.call(curMods, modName)) {
+                        modVal = curMods[modName];
+                        if(!nextMods || !(modName in nextMods)) {
+                            block.delMod(modName);
+                        }
+                    }
                 }
-            });
-
-            curMods && objects.each(curMods, function(modVal, modName) {
-                if(!nextMods || !(modName in nextMods)) {
-                    block.delMod(modName);
-                }
-            });
+            }
         },
 
         shouldComponentUpdate : function() {
