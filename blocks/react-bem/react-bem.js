@@ -1,9 +1,4 @@
-(function(global) {
-
-var React = global.React,
-    BEMHTML = global.BEMHTML,
-    modules = global.modules,
-
+var React = typeof require === 'undefined' ? global.React : require('react'),
     bemReactComponents = {},
     hasOwnProp = Object.prototype.hasOwnProperty;
 
@@ -145,13 +140,15 @@ function propsToBemjson(props) {
 }
 
 var BemDom = null,
+    $ = null,
     BemComponentMixin = {
         componentDidMount : function() {
             var _this = this,
                 lastProps = this.props;
 
-            modules.require(['i-bem__dom', 'jquery', this.props.block], function(BemDom_, $, blockCls) {
+            modules.require(['i-bem__dom', 'jquery', this.props.block], function(BemDom_, $_, blockCls) {
                 BemDom = BemDom_;
+                $ = $_;
 
                 if(_this.isMounted()) {
                     _this.block = BemDom_.init($(React.findDOMNode(_this))).bem(blockCls.getName())
@@ -172,14 +169,19 @@ var BemDom = null,
                             fn && fn.apply(this, arguments);
                         });
 
+                    _this.blockDidMount && _this.blockDidMount($);
+
                     if(_this.props !== lastProps) {
                         _this.updateBlock(lastProps, _this.props);
                     }
                 }
             });
+
+            this.mountBemjson && this.mountBemjson();
         },
 
         componentWillUnmount : function() {
+            this.unmountBemjson && this.unmountBemjson();
             this.block && BemDom.destruct(this.block.domElem);
         },
 
@@ -228,35 +230,17 @@ var BemDom = null,
             return false;
         },
 
+        getInitialState : function() {
+            this.rootBemjson = propsToBemjson(this.props);
+            this.processBemjson && this.processBemjson();
+            return null;
+        },
+
         render : function() {
-            return bemjsonToReact(propsToBemjson(this.props));
+            return bemjsonToReact(this.rootBemjson);
         }
     },
-    reactBem = {
+    ReactBem = {
         createElement : createElement,
         createComponent : createComponent
     };
-
-var defineAsGlobal = true;
-if(typeof module === 'object' && typeof module.exports === 'object') {
-    module.exports = reactBem;
-    defineAsGlobal = false;
-}
-
-if(typeof modules === 'object' && typeof modules.define === 'function') {
-    modules.define('react-bem', function(provide) {
-        provide(reactBem);
-    });
-    defineAsGlobal = false;
-}
-
-if(typeof define === 'function') {
-    define(function(require, exports, module) {
-        module.exports = reactBem;
-    });
-    defineAsGlobal = false;
-}
-
-defineAsGlobal && (global.reactBem = reactBem);
-
-})(this);

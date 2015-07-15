@@ -2,11 +2,11 @@
   "author": "",
   "license": "MPL-2.0",
   "name": "bem-components-react",
-  "version": "2.2.1",
-  "description": "BEM Components Library",
+  "version": "0.0.1",
+  "description": "BEM Components Library for React",
   "repository": {
     "type": "git",
-    "url": "git://github.com/bem/bem-components.git"
+    "url": "git://github.com/bem/bem-components-react.git"
   },
   "keywords": [
     "bem"

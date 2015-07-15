@@ -1,4 +1,4 @@
-var LIB_NAME = 'bem-components',
+var LIB_NAME = 'bem-components-react',
     DEFAULT_LANGS = ['ru', 'en'],
     BEM_TEMPLATE_ENGINE = process.env.BEM_TEMPLATE_ENGINE || 'BH',
     fs = require('fs'),
@@ -98,8 +98,8 @@ module.exports = function(config) {
                         target : LIB_NAME + '.dev.js'
                     }],
                     [techs.engines.bemhtml, { target : LIB_NAME + '.dev.bemhtml.js', devMode : false }],
-                    [techs.engines.bhServerInclude, { target : LIB_NAME + '.dev.bh.js', jsAttrName : 'data-bem', jsAttrScheme : 'json', mimic : ['BH', 'BEMHTML'] }],
-                    [techs.engines.bhClient, { target : '.tmp.browser.bh.js', jsAttrName : 'data-bem', jsAttrScheme : 'json', mimic : ['BH', 'BEMHTML'] }],
+                    [techs.engines.bhServerInclude, { target : LIB_NAME + '.dev.bh.js', jsAttrName : 'data-bem', jsAttrScheme : 'json' }],
+                    [techs.engines.bhClient, { target : '.tmp.browser.bh.js', jsAttrName : 'data-bem', jsAttrScheme : 'json' }],
                     [techs.files.merge, {
                         target : LIB_NAME + '.dev.js+bemhtml.js',
                         sources : [LIB_NAME + '.dev.js', LIB_NAME + '.dev.bemhtml.js']
@@ -377,8 +377,7 @@ function getTestLevels(platform) {
 function getSpecLevels(platform) {
     return [].concat(
         { path : path.join('libs', 'bem-pr', 'spec.blocks'), check : false },
-        getSourceLevels(platform),
-        'specs.blocks'
+        getSourceLevels(platform)
     );
 }
 
