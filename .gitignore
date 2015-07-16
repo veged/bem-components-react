@@ -1,3 +1,4 @@
 blocks/*/_*
 node_modules/
 libs/
+bundles/bem-components-react/_bem-components-react.js

@@ -1,16 +1,16 @@
 var myClass = React.createClass({
         getInitialState : function() {
-            return { text : ' !!! ' };
+            return { text : 'initial text' };
         },
 
         componentDidMount : function() {
             var _this = this;
             setTimeout(function() {
-                _this.setState({ text : ' ??? ' });
+                _this.setState({ text : '1st update' });
                 setTimeout(function() {
-                    _this.setState({ text : ' !!! ', disabled : true });
-                }, 50)
-            }, 50)
+                    _this.setState({ text : '2nd update', disabled : true });
+                }, 2050);
+            }, 50);
         },
 
         render : function() {
@@ -45,7 +45,7 @@ var myClass = React.createClass({
                         block : 'button',
                         key : 'b',
                         ref : 'button',
-                        mods : { theme : 'islands', size : 'm', disabled : !this.state.disabled },
+                        mods : { theme : 'islands', size : 'm' },
                         text : this.state.text,
                         on : {
                             'click' : function(e) {
@@ -61,22 +61,9 @@ var myClass = React.createClass({
                             }
                         }
                     })
-                <!--ReactBem.createElement(-->
-                    <!--{-->
-                        <!--block : 'select',-->
-                        <!--key : 's',-->
-                        <!--mods : { mode : 'radio-check', theme : 'islands', size : 'm' },-->
-                        <!--val : 2,-->
-                        <!--text : '—',-->
-                        <!--options : [-->
-                            <!--{ val : 1, text : 'Доклад' },-->
-                            <!--{ val : 2, text : 'Мастер-класс' },-->
-                            <!--{ val : 3, text : 'Круглый стол' }-->
-                        <!--]-->
-                    <!--})-->
             ]);
         }
     });
 
 setTimeout(function() { React.render(React.createElement(myClass), document.getElementsByClassName('my-app')[0]) }, 50);
-setTimeout(function() { React.render(React.createElement('div'), document.getElementsByClassName('my-app')[0]) }, 2000); // TODO: check proper unmount of subtree
+//setTimeout(function() { React.render(React.createElement('div'), document.getElementsByClassName('my-app')[0]) }, 2000); // TODO: check proper unmount of subtree
