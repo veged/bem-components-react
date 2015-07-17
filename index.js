@@ -33,37 +33,64 @@ var myClass = React.createClass({
                             }
                         }
                     },
-                    content : ReactBem.createElement({
-                        block : 'button',
-                        key : 'b',
-                        mods : { theme : 'islands', size : 'l' },
-                        text : this.state.text
-                    })
+                    content : [
+                        React.createElement('input', { key : 'b1', type : 'hidden', value : this.state.text }),
+                        ReactBem.createElement({
+                            block : 'button',
+                            key : 'b2',
+                            mods : { theme : 'islands', size : 'l' },
+                            text : this.state.text
+                        })
+                    ]
                 }),
-                ReactBem.createElement(
-                    {
-                        block : 'button',
-                        key : 'b',
-                        ref : 'button',
-                        mods : { theme : 'islands', size : 'm' },
-                        text : this.state.text,
-                        on : {
-                            'click' : function(e) {
-                                console.log('click');
-                                _this.setState({ opened : true });
-                            }
-                        },
-                        onMod : {
-                            'disabled' : {
-                                'true' : function() {
-                                    console.log('disable');
-                                }
+                ReactBem.createElement({
+                    block : 'button',
+                    key : 'b',
+                    ref : 'button',
+                    mods : { theme : 'islands', size : 'm' },
+                    text : this.state.text,
+                    on : {
+                        'click' : function(e) {
+                            console.log('click');
+                            _this.setState({ opened : true });
+                        }
+                    },
+                    onMod : {
+                        'disabled' : {
+                            'true' : function() {
+                                console.log('disable');
                             }
                         }
-                    })
+                    }
+                }),
+                ReactBem.createElement({
+                    block : 'button',
+                    key : 'b1',
+                    mods : { theme : 'islands', size : 'm' },
+                    text : 'click to change',
+                    on : {
+                        click : function() {
+                            _this.setState({ text : 'new state!' });
+                        }
+                    }
+                })
             ]);
         }
     });
 
 setTimeout(function() { React.render(React.createElement(myClass), document.getElementsByClassName('my-app')[0]) }, 50);
 //setTimeout(function() { React.render(React.createElement('div'), document.getElementsByClassName('my-app')[0]) }, 2000); // TODO: check proper unmount of subtree
+
+//console.log(React.renderToString(ReactBem.createElement({
+//    block : 'popup',
+//    key : 'p',
+//    mods : {
+//        theme : 'islands',
+//        target : 'anchor',
+//        autoclosable : true
+//    },
+//    content : [
+//        React.createElement('button', { key : 'b1' }, 'button1'),
+//        React.createElement('button', { key : 'b2' }, 'button2')
+//    ]
+//})))

@@ -116,12 +116,16 @@ function toReact(json) {
     cls && (attrs['className'] = cls);
 
     var tag = json.tag || 'div',
-        jcontent = json.content;
+        jcontent = json.content,
+        children = null;
 
-    jcontent != null &&
-        (attrs.dangerouslySetInnerHTML = { __html : BEMHTML.toHtml(jcontent) });
+    if(React.isValidElement(jcontent)) {
+        children = jcontent;
+    } else if(jcontent != null) {
+        attrs.dangerouslySetInnerHTML = { __html : BEMHTML.toHtml(jcontent) };
+    }
 
-    return React.createElement(tag, attrs);
+    return React.createElement(tag, attrs, children);
 }
 
 function bemjsonToReact(bemjson) {
