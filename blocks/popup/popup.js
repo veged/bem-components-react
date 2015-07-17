@@ -7,12 +7,12 @@ ReactBem.createComponent('popup', {
         React.render(React.createElement('div', null, this.props.content), this.popupRoot);
     },
 
-    mountBemjson : function() {
+    componentDidMount : function() {
         this.popupRoot = React.findDOMNode(this);
         this._renderPopupContent();
     },
 
-    updateBlockState : function(prevProps, nextProps) {
+    updateBlockState : function() {
         this._renderPopupContent();
     },
 
@@ -20,8 +20,7 @@ ReactBem.createComponent('popup', {
         this.block.setAnchor($(React.findDOMNode(this.props.getAnchor())));
     },
 
-    unmountBemjson : function() {
-        console.log('unmountBemjson popup');
-        //React.unmountComponentAtNode(React.findDOMNode(this));
+    componentWillUnmount : function() {
+        React.unmountComponentAtNode(this.popupRoot);
     }
 });

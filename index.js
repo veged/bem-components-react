@@ -1,17 +1,27 @@
+var MyInput = React.createClass({
+    componentWillUnmount : function() {
+        console.log('my input unmount!');
+    },
+
+    render : function() {
+        return React.createElement('input', this.props);
+    }
+});
+
 var myClass = React.createClass({
         getInitialState : function() {
             return { text : 'initial text' };
         },
 
-        componentDidMount : function() {
-            var _this = this;
-            setTimeout(function() {
-                _this.setState({ text : '1st update' });
-                setTimeout(function() {
-                    _this.setState({ text : '2nd update', disabled : true });
-                }, 2050);
-            }, 50);
-        },
+        //componentDidMount : function() {
+        //    var _this = this;
+        //    setTimeout(function() {
+        //        _this.setState({ text : '1st update' });
+        //        setTimeout(function() {
+        //            _this.setState({ text : '2nd update', disabled : true });
+        //        }, 2050);
+        //    }, 50);
+        //},
 
         render : function() {
             var _this = this;
@@ -34,7 +44,7 @@ var myClass = React.createClass({
                         }
                     },
                     content : [
-                        React.createElement('input', { key : 'b1', type : 'hidden', value : this.state.text }),
+                        React.createElement(MyInput, { key : 'b1', type : 'hidden', value : this.state.text }),
                         ReactBem.createElement({
                             block : 'button',
                             key : 'b2',

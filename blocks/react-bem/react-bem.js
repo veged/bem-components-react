@@ -14,10 +14,35 @@ function extend(target, source) {
     return target;
 }
 
+var REACT_COMPONENT_METHODS = {
+    'componentDidMount' : 'base first',
+    'componentWillUnmount' : 'base last'
+};
+
 function createComponent(block, spec) {
-    return bemReactComponents[block] = React.createClass(extend({
-        mixins : [BemComponentMixin]
-    }, spec));
+    for(var method in BemComponentBase) {
+        var baseMethod = BemComponentBase[method],
+            baseOrder = REACT_COMPONENT_METHODS[method];
+
+        if(baseOrder && spec[method]) {
+            var specMethod = spec[method];
+            (function(baseOrder, specMethod, baseMethod) {
+                spec[method] = baseOrder === 'base first'?
+                    function() {
+                        baseMethod.apply(this, arguments);
+                        specMethod.apply(this, arguments);
+                    } :
+                    function() {
+                        specMethod.apply(this, arguments);
+                        baseMethod.apply(this, arguments);
+                    };
+            })(baseOrder, specMethod, baseMethod)
+        } else {
+            spec[method] = baseMethod;
+        }
+    }
+
+    return bemReactComponents[block] = React.createClass(spec);
 }
 
 function createElement(bemjson) {
@@ -145,7 +170,7 @@ function propsToBemjson(props) {
 
 var BemDom = null,
     $ = null,
-    BemComponentMixin = {
+    BemComponentBase = {
         componentDidMount : function() {
             var _this = this,
                 lastProps = this.props;
@@ -173,26 +198,21 @@ var BemDom = null,
                             fn && fn.apply(this, arguments);
                         });
 
-                    _this.blockDidMount && _this.blockDidMount($);
+                    _this.blockDidMount && _this.blockDidMount();
 
                     if(_this.props !== lastProps) {
                         _this.updateBlock(lastProps, _this.props);
                     }
                 }
             });
-
-            this.mountBemjson && this.mountBemjson();
         },
 
         componentWillUnmount : function() {
-            this.unmountBemjson && this.unmountBemjson();
             this.block && BemDom.destruct(this.block.domElem);
         },
 
         componentWillReceiveProps : function(nextProps) {
-            if(!this.block) {
-                return;
-            }
+            if(!this.block) return;
             this.updateBlock(this.props, nextProps);
         },
 
