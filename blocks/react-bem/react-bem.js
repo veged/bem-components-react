@@ -2,55 +2,6 @@ var React = typeof require === 'undefined' ? global.React : require('react'),
     bemReactComponents = {},
     hasOwnProp = Object.prototype.hasOwnProperty;
 
-function extend(target, source) {
-    (typeof target !== 'object' || target === null) && (target = {});
-
-    if(source) {
-        for(var key in source) {
-            hasOwnProp.call(source, key) && (target[key] = source[key]);
-        }
-    }
-
-    return target;
-}
-
-var REACT_COMPONENT_METHODS = {
-    'componentDidMount' : 'base first',
-    'componentWillUnmount' : 'base last'
-};
-
-function createComponent(block, spec) {
-    for(var method in BemComponentBase) {
-        var baseMethod = BemComponentBase[method],
-            baseOrder = REACT_COMPONENT_METHODS[method];
-
-        if(baseOrder && spec[method]) {
-            var specMethod = spec[method];
-            (function(baseOrder, specMethod, baseMethod) {
-                spec[method] = baseOrder === 'base first'?
-                    function() {
-                        baseMethod.apply(this, arguments);
-                        specMethod.apply(this, arguments);
-                    } :
-                    function() {
-                        specMethod.apply(this, arguments);
-                        baseMethod.apply(this, arguments);
-                    };
-            })(baseOrder, specMethod, baseMethod)
-        } else {
-            spec[method] = baseMethod;
-        }
-    }
-
-    return bemReactComponents[block] = React.createClass(spec);
-}
-
-function createElement(bemjson) {
-    return React.createElement(
-        bemReactComponents[bemjson.block],
-        bemjson);
-}
-
 function toBemCssClasses(json, base, parentBase) {
     var mods, mod, res = '', i;
 
@@ -170,16 +121,26 @@ function propsToBemjson(props) {
 
 var BemDom = null,
     $ = null,
-    BemComponentBase = {
+    BaseBemComponent = {
+        __constructor : function(props) {
+            this.__base.apply(this, arguments);
+
+            this.block = null;
+            this.isComponentMount = false;
+            this.rootBemjson = propsToBemjson(this.props);
+        },
+
         componentDidMount : function() {
             var _this = this,
                 lastProps = this.props;
 
-            modules.require(['i-bem__dom', 'jquery', this.props.block], function(BemDom_, $_, blockCls) {
-                BemDom = BemDom_;
-                $ = $_;
+            this.isComponentMount = true;
 
-                if(_this.isMounted()) {
+            modules.require(['i-bem__dom', 'jquery', this.props.block], function(BemDom_, $_, blockCls) {
+                BemDom || (BemDom = BemDom_);
+                $ || ($ = $_);
+
+                if(_this.isComponentMount) {
                     _this.block = BemDom_.init($(React.findDOMNode(_this))).bem(blockCls.getName())
                         .on('*', function(e, data) {
                             var fn;
@@ -198,7 +159,7 @@ var BemDom = null,
                             fn && fn.apply(this, arguments);
                         });
 
-                    _this.blockDidMount && _this.blockDidMount();
+                    _this.blockDidMount();
 
                     if(_this.props !== lastProps) {
                         _this.updateBlock(lastProps, _this.props);
@@ -207,7 +168,11 @@ var BemDom = null,
             });
         },
 
+        blockDidMount : function() {
+        },
+
         componentWillUnmount : function() {
+            this.isComponentMount = false;
             this.block && BemDom.destruct(this.block.domElem);
         },
 
@@ -218,7 +183,7 @@ var BemDom = null,
 
         updateBlock : function(curProps, nextProps) {
             this.updateBlockMods(curProps, nextProps);
-            this.updateBlockState && this.updateBlockState(curProps, nextProps);
+            this.updateBlockState(curProps, nextProps);
         },
 
         updateBlockMods : function(curProps, nextProps) {
@@ -250,14 +215,11 @@ var BemDom = null,
             }
         },
 
-        shouldComponentUpdate : function() {
-            return false;
+        updateBlockState : function(curProps, nextProps) {
         },
 
-        getInitialState : function() {
-            this.rootBemjson = propsToBemjson(this.props);
-            this.processBemjson && this.processBemjson();
-            return null;
+        shouldComponentUpdate : function() {
+            return false;
         },
 
         render : function() {
@@ -265,6 +227,16 @@ var BemDom = null,
         }
     },
     ReactBem = {
-        createElement : createElement,
-        createComponent : createComponent
+        createComponent : createComponent,
+        createElement : createElement
     };
+
+function createComponent(block, spec) {
+    return bemReactComponents[block] = inherit([React.Component, BaseBemComponent], spec);
+}
+
+function createElement(bemjson) {
+    return React.createElement(
+        bemReactComponents[bemjson.block],
+        bemjson);
+}

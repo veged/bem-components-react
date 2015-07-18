@@ -5,6 +5,11 @@ var BEMHTML = (function(module) {
     return module.exports
 })({});
 
+var inherit = (function(module, exports) {
+    /* borschik:include:../../libs/inherit/lib/inherit.js */
+    return module.exports
+})({}, {});
+
 /* borschik:include:../../blocks/react-bem/react-bem.js */
 /* borschik:include:../../blocks/button/button.js */
 /* borschik:include:../../blocks/popup/popup.js */
