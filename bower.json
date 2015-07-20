@@ -11,7 +11,8 @@
     "libs"
   ],
   "dependencies": {
-    "bem-components-dist": "git@github.com:bem/bem-components-dist.git#2.2.1"
+    "bem-components-dist": "git@github.com:bem/bem-components-dist.git#2.2.1",
+    "inherit": "dfilatov/inherit#~2.2.2"
   },
   "license": "MPL-2.0",
   "private": true
