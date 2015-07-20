@@ -1,5 +1,5 @@
 ReactBem.createComponent('button', {
-    updateBlockState : function(prevProps, nextProps) {
+    blockUpdateState : function(prevProps, nextProps) {
         nextProps.text === prevProps.text || (this.block.setText(nextProps.text));
     }
 });

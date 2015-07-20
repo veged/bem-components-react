@@ -162,7 +162,7 @@ var BemDom = null,
                     _this.blockDidMount();
 
                     if(_this.props !== lastProps) {
-                        _this.updateBlock(lastProps, _this.props);
+                        _this.blockUpdate(lastProps, _this.props);
                     }
                 }
             });
@@ -173,20 +173,20 @@ var BemDom = null,
 
         componentWillUnmount : function() {
             this.isComponentMount = false;
-            this.block && BemDom.destruct(this.block.domElem);
+            this.block && BemDom.detach(this.block.domElem);
         },
 
         componentWillReceiveProps : function(nextProps) {
             if(!this.block) return;
-            this.updateBlock(this.props, nextProps);
+            this.blockUpdate(this.props, nextProps);
         },
 
-        updateBlock : function(curProps, nextProps) {
-            this.updateBlockMods(curProps, nextProps);
-            this.updateBlockState(curProps, nextProps);
+        blockUpdate : function(curProps, nextProps) {
+            this.blockUpdateMods(curProps, nextProps);
+            this.blockUpdateState(curProps, nextProps);
         },
 
-        updateBlockMods : function(curProps, nextProps) {
+        blockUpdateMods : function(curProps, nextProps) {
             var nextMods = nextProps.mods,
                 curMods = curProps.mods,
                 block = this.block,
@@ -215,7 +215,7 @@ var BemDom = null,
             }
         },
 
-        updateBlockState : function(curProps, nextProps) {
+        blockUpdateState : function(curProps, nextProps) {
         },
 
         shouldComponentUpdate : function() {

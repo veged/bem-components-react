@@ -75,12 +75,19 @@ var myClass = React.createClass({
                 }),
                 ReactBem.createElement({
                     block : 'button',
-                    key : 'b1',
+                    key : 'b1' + new Date().getTime(),
                     mods : { theme : 'islands', size : 'm' },
                     text : 'click to change',
                     on : {
                         click : function() {
                             _this.setState({ text : 'new state!' });
+                        }
+                    },
+                    onMod : {
+                        js : {
+                            '' : function() {
+                                console.log('UNMOUNT');
+                            }
                         }
                     }
                 })

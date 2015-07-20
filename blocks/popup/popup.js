@@ -13,10 +13,14 @@ ReactBem.createComponent('popup', {
 
     blockDidMount : function() {
         this.__base.apply(this, arguments);
-        this.block.setAnchor($(React.findDOMNode(this.props.getAnchor())));
+        var domElem = this.block.domElem;
+        BemDom.scope.append(
+            this.block
+                .setAnchor($(React.findDOMNode(this.props.getAnchor())))
+                .domElem.replaceWith('<div data-reactid="' + domElem.attr('data-reactid') + '"/>'));
     },
 
-    updateBlockState : function() {
+    blockUpdateState : function() {
         this.updatePopupContent();
     },
 
