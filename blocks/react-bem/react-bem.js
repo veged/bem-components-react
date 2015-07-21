@@ -173,6 +173,7 @@ var BemDom = null,
 
         componentWillUnmount : function() {
             this.isComponentMount = false;
+            // TODO: https://github.com/bem/bem-core/issues/1102
             this.block && BemDom.detach(this.block.domElem);
         },
 

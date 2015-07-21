@@ -17,7 +17,7 @@ ReactBem.createComponent('popup', {
         BemDom.scope.append(
             this.block
                 .setAnchor($(React.findDOMNode(this.props.getAnchor())))
-                .domElem.replaceWith('<div data-reactid="' + domElem.attr('data-reactid') + '"/>'));
+                .domElem.replaceWith('<noscript/>')); // TODO: check does such DOM mutations are valid
     },
 
     blockUpdateState : function() {
@@ -26,7 +26,9 @@ ReactBem.createComponent('popup', {
 
     componentWillUnmount : function() {
         React.unmountComponentAtNode(this.popupRoot);
-        this.__base.apply(this, arguments);
+        // NOTE: Doesn't use `__base`, as we need to `destruct` not to `detach` popup
+        this.block && BemDom.destruct(this.block.domElem);
+        this.popupRoot = null;
     },
 
     updatePopupContent : function() {

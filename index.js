@@ -10,7 +10,10 @@ var MyInput = React.createClass({
 
 var myClass = React.createClass({
         getInitialState : function() {
-            return { text : 'initial text' };
+            return {
+                text : 'initial text',
+                myKeySuffix : '123'
+            };
         },
 
         //componentDidMount : function() {
@@ -28,7 +31,7 @@ var myClass = React.createClass({
             return React.createElement('div', null, [
                 ReactBem.createElement({
                     block : 'popup',
-                    key : 'p',
+                    key : 'p' + this.state.myKeySuffix,
                     getAnchor : function() { return _this.refs.button; },
                     mods : {
                         theme : 'islands',
@@ -55,7 +58,7 @@ var myClass = React.createClass({
                 }),
                 ReactBem.createElement({
                     block : 'button',
-                    key : 'b',
+                    key : 'b' + this.state.myKeySuffix,
                     ref : 'button',
                     mods : { theme : 'islands', size : 'm' },
                     text : this.state.text,
@@ -81,6 +84,7 @@ var myClass = React.createClass({
                     on : {
                         click : function() {
                             _this.setState({ text : 'new state!' });
+                            //_this.setState({ myKeySuffix : Date.now() });
                         }
                     },
                     onMod : {
@@ -96,7 +100,7 @@ var myClass = React.createClass({
     });
 
 setTimeout(function() { React.render(React.createElement(myClass), document.getElementsByClassName('my-app')[0]) }, 50);
-//setTimeout(function() { React.render(React.createElement('div'), document.getElementsByClassName('my-app')[0]) }, 2000); // TODO: check proper unmount of subtree
+setTimeout(function() { React.render(React.createElement('div'), document.getElementsByClassName('my-app')[0]) }, 2000); // TODO: check proper unmount of subtree
 
 //console.log(React.renderToString(ReactBem.createElement({
 //    block : 'popup',
