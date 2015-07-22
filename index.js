@@ -16,16 +16,6 @@ var myClass = React.createClass({
             };
         },
 
-        //componentDidMount : function() {
-        //    var _this = this;
-        //    setTimeout(function() {
-        //        _this.setState({ text : '1st update' });
-        //        setTimeout(function() {
-        //            _this.setState({ text : '2nd update', disabled : true });
-        //        }, 2050);
-        //    }, 50);
-        //},
-
         render : function() {
             var _this = this;
             return React.createElement('div', null, [
@@ -41,14 +31,24 @@ var myClass = React.createClass({
                     },
                     onMod : {
                         visible : {
-                            '' : function() {
-                                console.log('popup visible');
+                            '' : function(e) {
                                 _this.setState({ opened : false });
                             }
                         }
                     },
                     content : [
                         React.createElement(MyInput, { key : 'b1', type : 'hidden', value : this.state.text }),
+                        ReactBem.createElement({
+                            block : 'input',
+                            key : 'i1',
+                            mods : { theme : 'islands', size : 'm', 'has-clear' : true },
+                            val : _this.state.text,
+                            on : {
+                                'change' : function(e) {
+                                    _this.setState({ text : e.target.getVal() });
+                                }
+                            }
+                        }),
                         ReactBem.createElement({
                             block : 'button',
                             key : 'b2',
@@ -79,7 +79,7 @@ var myClass = React.createClass({
                 }),
                 ReactBem.createElement({
                     block : 'button',
-                    key : 'b1' + new Date().getTime(),
+                    key : 'b1',
                     mods : { theme : 'islands', size : 'm' },
                     text : 'click to change',
                     on : {

@@ -12,6 +12,7 @@ var inherit = (function(module, exports) {
 
 /* borschik:include:../../blocks/react-bem/react-bem.js */
 /* borschik:include:../../blocks/button/button.js */
+/* borschik:include:../../blocks/input/input.js */
 /* borschik:include:../../blocks/popup/popup.js */
 
 var defineAsGlobal = true;
