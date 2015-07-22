@@ -1,3 +1,8 @@
+/*
+ Currently only `button`, `input` and `popup` blocks from bem/bem-components are available.
+ See https://en.bem.info/libs/bem-components/v2.2.1/ for BEMJSON API.
+*/
+
 var App = React.createClass({
     getInitialState : function() {
         return {
@@ -26,6 +31,7 @@ var App = React.createClass({
                     }
                 },
                 content : [
+                    // Any React component can be used here
                     React.createElement('div', { key : 'd1' }, _this.state.text),
                     ReactBem.createElement({
                         block : 'input',
@@ -34,7 +40,8 @@ var App = React.createClass({
                         val : _this.state.text,
                         on : {
                             'change' : function(e) {
-                                _this.setState({ text : e.target.getVal() });
+                                var newVal = e.target.getVal(); // See bem.info for `input`'s  API
+                                _this.setState({ text : newVal });
                             }
                         }
                     })
