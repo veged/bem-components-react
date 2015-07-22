@@ -2,36 +2,50 @@ ReactBem.createComponent('popup', {
     __constructor : function() {
         this.__base.apply(this, arguments);
         this.rootBemjson.content = null;
-        this.popupRoot = null;
     },
 
     componentDidMount : function() {
+        this.renderPopup(this.props);
         this.__base.apply(this, arguments);
-        this.popupRoot = React.findDOMNode(this);
-        this.updatePopupContent();
     },
 
     blockDidMount : function() {
         this.__base.apply(this, arguments);
-        var domElem = this.block.domElem;
-        BemDom.scope.append(
-            this.block
-                .setAnchor($(React.findDOMNode(this.props.getAnchor())))
-                .domElem.replaceWith('<noscript/>')); // TODO: check does such DOM mutations are valid
+        this.block.setAnchor($(React.findDOMNode(this.props.getAnchor())));
     },
 
     blockUpdateState : function() {
-        this.updatePopupContent();
+        this.renderPopup(this.props);
     },
 
     componentWillUnmount : function() {
-        React.unmountComponentAtNode(this.popupRoot);
+        console.log('popup unmount');
+        React.unmountComponentAtNode(this.blockRoot);
         // NOTE: Doesn't use `__base`, as we need to `destruct` not to `detach` popup
         this.block && BemDom.destruct(this.block.domElem);
-        this.popupRoot = null;
+        this.blockRoot = null;
     },
 
-    updatePopupContent : function() {
-        React.render(React.createElement('div', null, this.props.content), this.popupRoot);
+    render : function() {
+        return React.createElement('div');
+    },
+
+    renderPopup : function(props) {
+        if(!this.isComponentMount) {
+            var componentNode = React.findDOMNode(this);
+            this.rootBemjson.block = 'bem-popup';
+            componentNode.innerHTML = React.renderToStaticMarkup(ReactBem.createElement(this.rootBemjson));
+            this.blockRoot = componentNode.firstChild;
+            componentNode = null;
+        }
+
+        React.render(React.createElement('div', null, props.content), this.blockRoot);
+    }
+});
+
+ReactBem.createComponent('bem-popup', {
+    __constructor : function() {
+        this.__base.apply(this, arguments);
+        this.rootBemjson.block = 'popup';
     }
 });

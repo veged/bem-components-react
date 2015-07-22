@@ -126,6 +126,7 @@ var BemDom = null,
             this.__base.apply(this, arguments);
 
             this.block = null;
+            this.blockRoot = this;
             this.isComponentMount = false;
             this.rootBemjson = propsToBemjson(this.props);
         },
@@ -141,7 +142,7 @@ var BemDom = null,
                 $ || ($ = $_);
 
                 if(_this.isComponentMount) {
-                    _this.block = BemDom_.init($(React.findDOMNode(_this))).bem(blockCls.getName())
+                    _this.block = BemDom_.init($(React.findDOMNode(_this.blockRoot))).bem(blockCls.getName())
                         .on('*', function(e, data) {
                             var fn;
 
@@ -173,8 +174,8 @@ var BemDom = null,
 
         componentWillUnmount : function() {
             this.isComponentMount = false;
-            // TODO: https://github.com/bem/bem-core/issues/1102
             this.block && BemDom.detach(this.block.domElem);
+            this.blockRoot = null;
         },
 
         componentWillReceiveProps : function(nextProps) {

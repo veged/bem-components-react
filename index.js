@@ -42,6 +42,7 @@ var myClass = React.createClass({
                     onMod : {
                         visible : {
                             '' : function() {
+                                console.log('popup visible');
                                 _this.setState({ opened : false });
                             }
                         }
@@ -84,7 +85,7 @@ var myClass = React.createClass({
                     on : {
                         click : function() {
                             _this.setState({ text : 'new state!' });
-                            //_this.setState({ myKeySuffix : Date.now() });
+                            _this.setState({ myKeySuffix : Date.now() });
                         }
                     },
                     onMod : {
@@ -100,7 +101,7 @@ var myClass = React.createClass({
     });
 
 setTimeout(function() { React.render(React.createElement(myClass), document.getElementsByClassName('my-app')[0]) }, 50);
-setTimeout(function() { React.render(React.createElement('div'), document.getElementsByClassName('my-app')[0]) }, 2000); // TODO: check proper unmount of subtree
+//setTimeout(function() { React.render(React.createElement('div'), document.getElementsByClassName('my-app')[0]) }, 2000); // TODO: check proper unmount of subtree
 
 //console.log(React.renderToString(ReactBem.createElement({
 //    block : 'popup',
